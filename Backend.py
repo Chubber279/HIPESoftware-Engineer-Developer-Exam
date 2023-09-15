@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import json
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -27,16 +28,38 @@ def find_event_by_id(event_id):
             return event
     return None
 
-# Create Event
+def has_overlap(new_event):
+    for event in events:
+        if (new_event['start_time'] < event['end_time']) and (new_event['end_time'] > event['start_time']):
+            return True
+    return False
+
+
 @app.route('/events', methods=['POST'])
 def create_event():
     data = request.get_json()
-    event = {
+
+    # Convert time strings to seconds since epoch
+    start_time = int(datetime.strptime(data['start_time'], '%Y-%m-%d %H:%M:%S').timestamp())
+    end_time = int(datetime.strptime(data['end_time'], '%Y-%m-%d %H:%M:%S').timestamp())
+
+    # Check if event is in the past
+    if start_time < int(datetime.now().timestamp()):
+        return jsonify({'message': 'Event cannot be in the past'}), 400
+
+    new_event = {
         'id': len(events) + 1,
         'name': data['name'],
-        'description': data['description']
+        'description': data['description'],
+        'start_time': str(start_time),
+        'end_time': str(end_time)
     }
-    events.append(event)
+
+    # Check for overlapping events
+    if has_overlap(new_event):
+        return jsonify({'message': 'Event time overlaps with an existing event'}), 400
+
+    events.append(new_event)
     save_events_data()
     return jsonify({'message': 'Event created successfully'})
 
