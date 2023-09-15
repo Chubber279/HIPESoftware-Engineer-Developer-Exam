@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 import json
-from datetime import datetime
+from datetime import datetime, time
 from flask_cors import CORS
-import uuid
+import random
 
 app = Flask(__name__)
 
@@ -44,19 +44,34 @@ def create_event():
     data = request.get_json()
 
 
-    start_time = int(datetime.strptime(data['start_time'], '%Y-%m-%dT%H:%M').timestamp())
-    end_time = int(datetime.strptime(data['end_time'], '%Y-%m-%dT%H:%M').timestamp())
+    start_time = datetime.strptime(data['start_time'], '%Y-%m-%dT%H:%M').timestamp()
+    end_time = datetime.strptime(data['end_time'], '%Y-%m-%dT%H:%M').timestamp()
+
+    start_time_value = datetime.fromtimestamp(int(start_time)).time()
+    end_time_value = datetime.fromtimestamp(int(end_time)).time()
+
+    start_time_value = datetime.fromtimestamp(int(start_time)).time()
+    end_time_value = datetime.fromtimestamp(int(end_time)).time()
+
+    # Define time boundaries for 8 AM and 8 PM
+    start_limit = time(8, 0)
+    end_limit = time(20, 0)
+
+    # Check if start_time_value is before 8 AM or end_time_value is after 8 PM
+    if start_time_value < start_limit or end_time_value > end_limit:
+        return jsonify({'message': 'The event time is outside the allowed range (before 8 AM or after 8 PM)'}), 400
+
 
     # Check if event is in the past
-    if start_time < int(datetime.now().timestamp()):
+    if int(start_time) < int(datetime.now().timestamp()):
         return jsonify({'message': 'Event cannot be in the past'}), 400
 
     new_event = {
-        'id': str(uuid.uuid4()),
+        'id': ''.join(random.choice('0123456789') for _ in range(2)),
         'name': data['name'],
         'description': data['description'],
-        'start_time': str(start_time),
-        'end_time': str(end_time)
+        'start_time': str(int(start_time)),
+        'end_time': str(int(end_time))
     }
 
     # Check for overlapping events
@@ -65,7 +80,7 @@ def create_event():
 
     events.append(new_event)
     save_events_data()
-    return jsonify({'message': 'Event created successfully'})
+    return jsonify({'message': f'Event created successfully'})
 
 # Get all Events
 @app.route('/events', methods=['GET'])
