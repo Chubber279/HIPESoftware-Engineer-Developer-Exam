@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import json
 from datetime import datetime
 from flask_cors import CORS
+import uuid
 
 app = Flask(__name__)
 
@@ -42,16 +43,16 @@ def has_overlap(new_event):
 def create_event():
     data = request.get_json()
 
-    # Convert time strings to seconds since epoch
-    start_time = int(datetime.strptime(data['start_time'], '%Y-%m-%d %H:%M:%S').timestamp())
-    end_time = int(datetime.strptime(data['end_time'], '%Y-%m-%d %H:%M:%S').timestamp())
+
+    start_time = int(datetime.strptime(data['start_time'], '%Y-%m-%dT%H:%M').timestamp())
+    end_time = int(datetime.strptime(data['end_time'], '%Y-%m-%dT%H:%M').timestamp())
 
     # Check if event is in the past
     if start_time < int(datetime.now().timestamp()):
         return jsonify({'message': 'Event cannot be in the past'}), 400
 
     new_event = {
-        'id': len(events) + 1,
+        'id': str(uuid.uuid4()),
         'name': data['name'],
         'description': data['description'],
         'start_time': str(start_time),
