@@ -53,7 +53,7 @@ def create_event():
     start_time_value = datetime.fromtimestamp(int(start_time)).time()
     end_time_value = datetime.fromtimestamp(int(end_time)).time()
 
-    # Define time boundaries for 8 AM and 8 PM
+    # Define time 8 AM and 8 PM
     start_limit = time(8, 0)
     end_limit = time(20, 0)
 

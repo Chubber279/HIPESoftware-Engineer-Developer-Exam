@@ -18,16 +18,25 @@ export const EventButtons = ({ setShouldFetch }) => {
     setShowDeleteModal(false);
   };
 
+  {
+    /* Open Create Event Modal */
+  }
   const openCreateEvent = () => {
     closeModal();
     setShowCreateModal(true);
   };
 
+  {
+    /* Open Update Event Modal */
+  }
   const openUpdateEvent = () => {
     closeModal();
     setShowUpdateModal(true);
   };
 
+  {
+    /* Open Delete Event Modal */
+  }
   const openDeleteEvent = () => {
     closeModal();
     setShowDeleteModal(true);
