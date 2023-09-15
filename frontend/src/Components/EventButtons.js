@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import axios from "axios";
 
-export const EventButtons = () => {
+export const EventButtons = ({ setShouldFetch }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -54,6 +54,7 @@ export const EventButtons = () => {
       .then((response) => {
         console.log("Event Created successfully:", response.data);
         window.alert(response.data.message);
+        setShouldFetch(true);
       })
       .catch((error) => {
         console.error("Error Creating event:", error);
@@ -76,6 +77,7 @@ export const EventButtons = () => {
       .then((response) => {
         console.log("Event Updated successfully:", response.data);
         window.alert(response.data.message);
+        setShouldFetch(true);
       })
       .catch((error) => {
         console.error("Error Updating event:", error);
@@ -91,6 +93,7 @@ export const EventButtons = () => {
       .then((response) => {
         console.log("Event Deleted successfully:", response.data);
         window.alert(response.data.message);
+        setShouldFetch(true);
       })
       .catch((error) => {
         console.error("Error Deleting event:", error);
